@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://parking-management-api-13dk.onrender.com/api/$1"
+    }
+  ]
+}

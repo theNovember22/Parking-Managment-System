@@ -1,0 +1,21 @@
+# Executables
+*.exe
+*.out
+parking
+server
+
+# Object files
+*.o
+*.obj
+
+# Build folders
+build/
+bin/
+
+# Editor files
+.vscode/
+tempCodeRunnerFile.cpp
+
+# Operating-system files
+.DS_Store
+Thumbs.db

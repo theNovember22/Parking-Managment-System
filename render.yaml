@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: parking-management-api
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /api/stats

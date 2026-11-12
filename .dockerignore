@@ -1,0 +1,13 @@
+.git
+.gitignore
+.DS_Store
+.vscode
+build
+bin
+parking
+server
+*.o
+*.obj
+*.exe
+*.out
+tempCodeRunnerFile.cpp
