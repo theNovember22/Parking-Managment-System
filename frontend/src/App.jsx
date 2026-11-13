@@ -570,6 +570,946 @@ function Vehicle3DCanvas({ type = 'Car', className = 'h-44 w-full', compact = fa
 }
 
 /* ============================================================================
+   2D TOP-DOWN (AERIAL) PARKING LOT MAP & VEHICLE SILHOUETTES
+   ============================================================================ */
+
+function TopDownCar({ plate, facing = 'south', className = '' }) {
+  const isFacingNorth = facing === 'north';
+  return (
+    <div
+      className={`relative flex items-center justify-center transition-transform duration-300 ${
+        isFacingNorth ? 'rotate-180' : ''
+      } ${className}`}
+      style={{ width: '42px', height: '84px' }}
+    >
+      <svg
+        viewBox="0 0 60 120"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full h-full drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)]"
+      >
+        <defs>
+          <linearGradient id="carBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#2c2e35" />
+            <stop offset="40%" stopColor="#1e2025" />
+            <stop offset="100%" stopColor="#141518" />
+          </linearGradient>
+          <linearGradient id="carGlassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#0d0e12" />
+            <stop offset="100%" stopColor="#1b1d24" />
+          </linearGradient>
+          <linearGradient id="carRoofGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#25272e" />
+            <stop offset="100%" stopColor="#18191d" />
+          </linearGradient>
+        </defs>
+
+        {/* Shadow base */}
+        <path
+          d="M 12 8 Q 30 4 48 8 Q 57 14 57 32 L 57 92 Q 57 114 46 117 Q 30 119 14 117 Q 3 114 3 92 L 3 32 Q 3 14 12 8 Z"
+          fill="#0a0a0c"
+          opacity="0.6"
+        />
+
+        {/* Outer Car Body Silhouette */}
+        <path
+          d="M 12 10 Q 30 6 48 10 Q 56 16 56 34 L 56 90 Q 56 112 46 115 Q 30 117 14 115 Q 4 112 4 90 L 4 34 Q 4 16 12 10 Z"
+          fill="url(#carBodyGrad)"
+          stroke="#3f3f46"
+          strokeWidth="1.2"
+        />
+
+        {/* Hood Contours */}
+        <path d="M 18 12 L 20 28" stroke="#3f3f46" strokeWidth="0.8" strokeLinecap="round" opacity="0.6" />
+        <path d="M 42 12 L 40 28" stroke="#3f3f46" strokeWidth="0.8" strokeLinecap="round" opacity="0.6" />
+
+        {/* Dual Front Headlights (Warm White / Amber Xenon) */}
+        <rect x="7" y="11" width="7" height="4" rx="1.5" fill="#fef08a" opacity="0.9" />
+        <rect x="46" y="11" width="7" height="4" rx="1.5" fill="#fef08a" opacity="0.9" />
+
+        {/* Side Mirrors */}
+        <path d="M 4 34 L 0 32 Q -2 36 0 40 L 4 38 Z" fill="#27272a" stroke="#3f3f46" strokeWidth="0.8" />
+        <line x1="0" y1="34" x2="0" y2="39" stroke="#94a3b8" strokeWidth="0.9" />
+        <path d="M 56 34 L 60 32 Q 62 36 60 40 L 56 38 Z" fill="#27272a" stroke="#3f3f46" strokeWidth="0.8" />
+        <line x1="60" y1="34" x2="60" y2="39" stroke="#94a3b8" strokeWidth="0.9" />
+
+        {/* Front Windshield Glass */}
+        <path
+          d="M 10 32 L 50 32 L 44 46 L 16 46 Z"
+          fill="url(#carGlassGrad)"
+          stroke="#27272a"
+          strokeWidth="0.8"
+        />
+        {/* Glass Reflection Accent */}
+        <line x1="22" y1="35" x2="36" y2="43" stroke="rgba(255,255,255,0.4)" strokeWidth="1.2" strokeLinecap="round" />
+
+        {/* Cabin Roof Panel */}
+        <rect x="15" y="46" width="30" height="34" rx="3" fill="url(#carRoofGrad)" stroke="#27272a" strokeWidth="0.6" />
+        {/* Sunroof */}
+        <rect x="18" y="49" width="24" height="15" rx="2" fill="#090a0d" stroke="#3f3f46" strokeWidth="0.6" />
+
+        {/* Rear Windshield Glass */}
+        <path
+          d="M 16 80 L 44 80 L 49 94 L 11 94 Z"
+          fill="url(#carGlassGrad)"
+          stroke="#27272a"
+          strokeWidth="0.8"
+        />
+        {/* Rear defroster lines */}
+        <line x1="17" y1="84" x2="43" y2="84" stroke="rgba(239,68,68,0.25)" strokeWidth="0.6" />
+        <line x1="15" y1="88" x2="45" y2="88" stroke="rgba(239,68,68,0.25)" strokeWidth="0.6" />
+
+        {/* Rear Dual Red LED Taillights */}
+        <rect x="8" y="112" width="9" height="3" rx="1" fill="#ef4444" />
+        <rect x="43" y="112" width="9" height="3" rx="1" fill="#ef4444" />
+        {/* Center High Mount Stop Lamp */}
+        <rect x="25" y="94" width="10" height="2" rx="0.5" fill="#dc2626" />
+
+        {/* License Plate Badge on Roof/Trunk */}
+        <g transform="translate(11, 66)">
+          <rect x="0" y="0" width="38" height="12" rx="2.5" fill="#ffffff" stroke="#09090b" strokeWidth="0.8" />
+          <text
+            x="19"
+            y="9"
+            textAnchor="middle"
+            fill="#09090b"
+            fontSize="6.5"
+            fontWeight="700"
+            fontFamily="JetBrains Mono, monospace"
+            letterSpacing="0.04em"
+          >
+            {plate ? (plate.length > 9 ? plate.slice(0, 9) : plate) : 'CAR'}
+          </text>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+function TopDownBike({ plate, facing = 'south', className = '' }) {
+  const isFacingNorth = facing === 'north';
+  return (
+    <div
+      className={`relative flex items-center justify-center transition-transform duration-300 ${
+        isFacingNorth ? 'rotate-180' : ''
+      } ${className}`}
+      style={{ width: '26px', height: '66px' }}
+    >
+      <svg
+        viewBox="0 0 40 90"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full h-full drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)]"
+      >
+        {/* Front Tire */}
+        <rect x="17" y="3" width="6" height="18" rx="3" fill="#18181b" stroke="#3f3f46" strokeWidth="0.8" />
+
+        {/* Front Fender */}
+        <path d="M 16 12 C 16 8 24 8 24 12" stroke="#71717a" strokeWidth="1.2" fill="none" />
+
+        {/* Handlebars with Grips & Levers */}
+        <line x1="5" y1="22" x2="35" y2="22" stroke="#a1a1aa" strokeWidth="2.2" strokeLinecap="round" />
+        <rect x="3" y="19" width="5" height="6" rx="1.5" fill="#18181b" />
+        <rect x="32" y="19" width="5" height="6" rx="1.5" fill="#18181b" />
+        {/* Mirrors */}
+        <circle cx="4" cy="17" r="2.2" fill="#38bdf8" stroke="#18181b" strokeWidth="0.6" />
+        <circle cx="36" cy="17" r="2.2" fill="#38bdf8" stroke="#18181b" strokeWidth="0.6" />
+
+        {/* Front Headlight (Round Xenon) */}
+        <circle cx="20" cy="18" r="3.5" fill="#fef08a" stroke="#eab308" strokeWidth="0.8" />
+
+        {/* Fuel Tank */}
+        <path
+          d="M 20 25 C 27 25 28 38 25 46 C 22 50 18 50 15 46 C 12 38 13 25 20 25 Z"
+          fill="#27272a"
+          stroke="#52525b"
+          strokeWidth="1"
+        />
+        {/* Tank Cap */}
+        <circle cx="20" cy="32" r="1.8" fill="#e4e4e7" stroke="#18181b" strokeWidth="0.5" />
+
+        {/* Driver Saddle */}
+        <path
+          d="M 16 46 C 16 46 14 54 14 60 C 14 64 26 64 26 60 C 26 54 24 46 24 46 Z"
+          fill="#18181b"
+          stroke="#27272a"
+          strokeWidth="0.8"
+        />
+
+        {/* Passenger Pillion Seat */}
+        <rect x="16" y="60" width="8" height="12" rx="2" fill="#09090b" stroke="#27272a" strokeWidth="0.6" />
+
+        {/* Rear Tire */}
+        <rect x="17" y="70" width="6" height="16" rx="3" fill="#18181b" stroke="#3f3f46" strokeWidth="0.8" />
+
+        {/* Rear Tail Lamp (Red) */}
+        <rect x="16" y="78" width="8" height="2.5" rx="1" fill="#ef4444" />
+
+        {/* Compact License Tag */}
+        <g transform="translate(7, 50)">
+          <rect x="0" y="0" width="26" height="9" rx="2" fill="#ffffff" stroke="#09090b" strokeWidth="0.6" />
+          <text
+            x="13"
+            y="7"
+            textAnchor="middle"
+            fill="#09090b"
+            fontSize="5.2"
+            fontWeight="700"
+            fontFamily="JetBrains Mono, monospace"
+          >
+            {plate ? (plate.length > 7 ? plate.slice(0, 7) : plate) : 'BIKE'}
+          </text>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+function TopDownTruck({ plate, facing = 'south', className = '' }) {
+  const isFacingNorth = facing === 'north';
+  return (
+    <div
+      className={`relative flex items-center justify-center transition-transform duration-300 ${
+        isFacingNorth ? 'rotate-180' : ''
+      } ${className}`}
+      style={{ width: '52px', height: '116px' }}
+    >
+      <svg
+        viewBox="0 0 76 160"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full h-full drop-shadow-[0_6px_14px_rgba(0,0,0,0.5)]"
+      >
+        <defs>
+          <linearGradient id="truckCabGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#2e3038" />
+            <stop offset="100%" stopColor="#18191d" />
+          </linearGradient>
+          <linearGradient id="truckTrailerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#25272e" />
+            <stop offset="100%" stopColor="#121316" />
+          </linearGradient>
+        </defs>
+
+        {/* Front Cab Bumper */}
+        <rect x="10" y="6" width="56" height="8" rx="3" fill="#18181b" stroke="#3f3f46" strokeWidth="1" />
+        <rect x="12" y="7" width="8" height="4" rx="1" fill="#fef08a" />
+        <rect x="56" y="7" width="8" height="4" rx="1" fill="#fef08a" />
+
+        {/* Cab Body */}
+        <rect x="10" y="12" width="56" height="42" rx="4" fill="url(#truckCabGrad)" stroke="#3f3f46" strokeWidth="1" />
+
+        {/* Large Curved Front Windshield */}
+        <path
+          d="M 14 16 L 62 16 L 58 26 L 18 26 Z"
+          fill="#090a0d"
+          stroke="#27272a"
+          strokeWidth="0.8"
+        />
+        <line x1="24" y1="18" x2="52" y2="24" stroke="rgba(255,255,255,0.3)" strokeWidth="1.2" strokeLinecap="round" />
+
+        {/* Heavy Duty Side Mirrors on Brackets */}
+        <rect x="2" y="16" width="6" height="12" rx="1.5" fill="#18181b" stroke="#52525b" strokeWidth="0.8" />
+        <line x1="8" y1="20" x2="10" y2="20" stroke="#71717a" strokeWidth="1.2" />
+        <rect x="68" y="16" width="6" height="12" rx="1.5" fill="#18181b" stroke="#52525b" strokeWidth="0.8" />
+        <line x1="66" y1="20" x2="68" y2="20" stroke="#71717a" strokeWidth="1.2" />
+
+        {/* Cab Roof Air Fairing & 5 Amber Clearance Lights */}
+        <rect x="22" y="28" width="32" height="22" rx="2" fill="#202228" stroke="#3f3f46" strokeWidth="0.6" />
+        <circle cx="26" cy="14" r="1.2" fill="#f59e0b" />
+        <circle cx="32" cy="14" r="1.2" fill="#f59e0b" />
+        <circle cx="38" cy="14" r="1.2" fill="#f59e0b" />
+        <circle cx="44" cy="14" r="1.2" fill="#f59e0b" />
+        <circle cx="50" cy="14" r="1.2" fill="#f59e0b" />
+
+        {/* Articulation Pivot Gap / Fifth Wheel Coupling */}
+        <rect x="26" y="54" width="24" height="6" rx="1" fill="#09090b" stroke="#27272a" strokeWidth="0.8" />
+        <circle cx="38" cy="57" r="2.2" fill="#52525b" />
+
+        {/* Trailer Cargo Container */}
+        <rect x="7" y="60" width="62" height="92" rx="3" fill="url(#truckTrailerGrad)" stroke="#3f3f46" strokeWidth="1.2" />
+
+        {/* Corrugated Roof Longitudinal Ribs */}
+        {[16, 24, 32, 40, 48, 56, 64].map((x) => (
+          <line key={x} x1={x} y1="64" x2={x} y2="148" stroke="#18191d" strokeWidth="1.2" />
+        ))}
+
+        {/* Rear Safety Bumper with Yellow/Black Chevrons */}
+        <rect x="9" y="152" width="58" height="6" rx="1.5" fill="#eab308" stroke="#09090b" strokeWidth="0.8" />
+        <g stroke="#09090b" strokeWidth="2.2">
+          <line x1="14" y1="152" x2="19" y2="158" />
+          <line x1="22" y1="152" x2="27" y2="158" />
+          <line x1="30" y1="152" x2="35" y2="158" />
+          <line x1="38" y1="152" x2="43" y2="158" />
+          <line x1="46" y1="152" x2="51" y2="158" />
+          <line x1="54" y1="152" x2="59" y2="158" />
+        </g>
+
+        {/* Rear Red Taillights */}
+        <rect x="10" y="148" width="6" height="3" fill="#ef4444" />
+        <rect x="60" y="148" width="6" height="3" fill="#ef4444" />
+
+        {/* License Plate Badge across Container Roof */}
+        <g transform="translate(16, 98)">
+          <rect x="0" y="0" width="44" height="13" rx="2.5" fill="#ffffff" stroke="#09090b" strokeWidth="0.9" />
+          <text
+            x="22"
+            y="9.5"
+            textAnchor="middle"
+            fill="#09090b"
+            fontSize="6.8"
+            fontWeight="700"
+            fontFamily="JetBrains Mono, monospace"
+            letterSpacing="0.04em"
+          >
+            {plate ? (plate.length > 9 ? plate.slice(0, 9) : plate) : 'TRUCK'}
+          </text>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+function TopDownVehicleSvg({ type, plate, facing = 'south', className = '' }) {
+  if (type === 'Bike') {
+    return <TopDownBike plate={plate} facing={facing} className={className} />;
+  }
+  if (type === 'Truck') {
+    return <TopDownTruck plate={plate} facing={facing} className={className} />;
+  }
+  return <TopDownCar plate={plate} facing={facing} className={className} />;
+}
+
+function ParkingBay2D({
+  slot,
+  facing = 'south',
+  isSelected = false,
+  isInspected = false,
+  isDimmed = false,
+  onClick,
+  nowMs,
+  syncedAtMs,
+}) {
+  const isAvailable = slot.isAvailable;
+  const isBike = slot.type === 'Bike';
+  const isTruck = slot.type === 'Truck';
+  const v = slot.vehicle;
+
+  const bumperAtTop = facing === 'south';
+
+  return (
+    <div
+      onClick={() => onClick(slot)}
+      className={`group relative flex flex-col justify-between rounded-xl transition-all duration-200 cursor-pointer select-none ${
+        isBike ? 'w-16 sm:w-18 md:w-20 min-h-[142px]' : isTruck ? 'w-22 sm:w-24 md:w-26 min-h-[162px]' : 'w-20 sm:w-22 md:w-24 min-h-[142px]'
+      } ${
+        isDimmed
+          ? 'opacity-25 grayscale'
+          : isSelected
+          ? 'ring-2 ring-blue-500 bg-[#1e2330] shadow-[0_0_22px_rgba(59,130,246,0.5)]'
+          : isInspected
+          ? 'ring-2 ring-white bg-[#1a1c22] shadow-[0_0_20px_rgba(255,255,255,0.25)]'
+          : 'bg-[#131418] hover:bg-[#181a20] hover:ring-1 hover:ring-white/30 hover:shadow-lg'
+      } border border-dashed ${
+        isAvailable ? 'border-emerald-500/35' : 'border-rose-500/35'
+      } p-2`}
+      title={
+        isAvailable
+          ? `Bay ${slot.slotLabel} (${slot.type}) — Available. Click to park.`
+          : `Bay ${slot.slotLabel} — Occupied by ${v?.number}. Click to inspect / exit.`
+      }
+    >
+      {/* Rubber Wheel Bumper (when at top) */}
+      {bumperAtTop && (
+        <div className="w-full flex justify-center mb-1">
+          <div className="h-1.5 w-14 rounded-full bg-zinc-700 border border-zinc-600 shadow-inner flex items-center justify-around px-1">
+            <span className="w-1.5 h-0.5 bg-amber-400 rounded-sm" />
+            <span className="w-1.5 h-0.5 bg-amber-400 rounded-sm" />
+            <span className="w-1.5 h-0.5 bg-amber-400 rounded-sm" />
+          </div>
+        </div>
+      )}
+
+      {/* Bay Header: Stall ID & LED Sensor Beacon */}
+      <div className="flex items-center justify-between w-full">
+        <span
+          className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded tracking-wider ${
+            isAvailable
+              ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+              : 'bg-rose-500/15 text-rose-300 border border-rose-500/30'
+          }`}
+        >
+          {slot.slotLabel}
+        </span>
+
+        {/* Overhead Ultrasonic Sensor Indicator */}
+        <div className="flex items-center gap-1">
+          {isAvailable ? (
+            <div className="relative flex items-center justify-center w-2.5 h-2.5">
+              <span className="absolute w-3 h-3 rounded-full bg-emerald-400/40 animate-ping" />
+              <span className="relative w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_#22c55e]" />
+            </div>
+          ) : (
+            <div className="relative flex items-center justify-center w-2.5 h-2.5">
+              <span className="absolute w-3 h-3 rounded-full bg-rose-400/35 animate-pulse" />
+              <span className="relative w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_6px_#ef4444]" />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Bay Center: Occupied Vehicle SVG OR Available Empty Stall Markings */}
+      <div className="flex-1 flex flex-col items-center justify-center my-1 relative">
+        {!isAvailable && v ? (
+          <div className="relative w-full flex items-center justify-center">
+            <TopDownVehicleSvg
+              type={slot.type}
+              plate={v.number}
+              facing={facing}
+            />
+            {/* Quick hover indicator with plate */}
+            <div className="pointer-events-none absolute -bottom-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/90 backdrop-blur-md px-1.5 py-0.5 rounded border border-white/20 text-[9px] font-mono text-white whitespace-nowrap z-20 shadow-lg">
+              {v.number}
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center text-center py-2">
+            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest font-semibold">
+              {slot.type}
+            </span>
+            <span className="text-[9px] font-mono text-emerald-400/80 mt-0.5">
+              ₹{VEHICLE_META[slot.type]?.rate ?? 50}/h
+            </span>
+            <div className="mt-2 text-[8px] font-mono uppercase tracking-wider text-emerald-400 font-bold bg-emerald-950/40 border border-emerald-500/20 px-1.5 py-0.5 rounded opacity-80 group-hover:opacity-100 group-hover:bg-emerald-500 group-hover:text-black transition">
+              OPEN
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Rubber Wheel Bumper (when at bottom) */}
+      {!bumperAtTop && (
+        <div className="w-full flex justify-center mt-1">
+          <div className="h-1.5 w-14 rounded-full bg-zinc-700 border border-zinc-600 shadow-inner flex items-center justify-around px-1">
+            <span className="w-1.5 h-0.5 bg-amber-400 rounded-sm" />
+            <span className="w-1.5 h-0.5 bg-amber-400 rounded-sm" />
+            <span className="w-1.5 h-0.5 bg-amber-400 rounded-sm" />
+          </div>
+        </div>
+      )}
+
+      {/* Entrance threshold markings facing the aisle */}
+      <div
+        className={`w-full flex justify-between px-1 ${
+          bumperAtTop ? 'border-b-2 border-white/40 pt-0.5' : 'border-t-2 border-white/40 pb-0.5'
+        }`}
+      >
+        <span className="w-1.5 h-0.5 bg-white/60" />
+        <span className="w-1.5 h-0.5 bg-white/60" />
+      </div>
+    </div>
+  );
+}
+
+function OccupiedSlotModal2D({
+  slot,
+  onClose,
+  onExitVehicle,
+  nowMs,
+  syncedAtMs,
+  exitingVehicle,
+}) {
+  if (!slot || slot.isAvailable || !slot.vehicle) return null;
+  const v = slot.vehicle;
+
+  const deltaSec = syncedAtMs ? Math.max(0, Math.floor((nowMs - syncedAtMs) / 1000)) : 0;
+  const liveSec = (Number(v.durationSeconds) || 0) + deltaSec;
+  const liveHours = Math.max(1, Math.ceil(liveSec / 3600));
+  const liveBill = liveHours * (Number(v.ratePerHour) || 0);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.94, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 10 }}
+        className="w-full max-w-md rounded-3xl border border-black/10 bg-white p-7 shadow-2xl relative overflow-hidden"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-black/8 pb-4">
+          <div className="flex items-center gap-2.5">
+            <span className="rounded-lg bg-black text-white px-2.5 py-1 font-mono text-sm font-bold">
+              Bay [{slot.slotLabel}]
+            </span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              {slot.type} • Occupied
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-black transition"
+          >
+            <Icon name="X" className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Top-Down Vehicle Stage Preview */}
+        <div className="mt-5 rounded-2xl bg-gradient-to-b from-[#14151a] to-[#0a0a0c] p-5 flex flex-col items-center justify-center border border-zinc-800">
+          <TopDownVehicleSvg type={slot.type} plate={v.number} facing="south" />
+          <div className="mt-3.5 inline-flex items-center gap-2 rounded-lg border-2 border-zinc-700 bg-white px-3.5 py-1 shadow-sm">
+            <span className="font-mono text-[10px] font-bold text-blue-900 bg-blue-100 px-1 rounded">IND</span>
+            <span className="font-mono text-sm font-bold text-zinc-900 tracking-wider">{v.number}</span>
+          </div>
+        </div>
+
+        {/* Metrics Grid */}
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-black/10 bg-[#fcfcfc] p-3">
+            <span className="text-[10px] uppercase font-semibold text-zinc-400 tracking-wider">Elapsed Time</span>
+            <div className="mt-1 font-mono text-base font-semibold text-black">
+              {formatDuration(liveSec)}
+            </div>
+            <span className="text-[10px] text-zinc-500">{liveHours} billed hrs</span>
+          </div>
+
+          <div className="rounded-xl border border-black/10 bg-[#fcfcfc] p-3">
+            <span className="text-[10px] uppercase font-semibold text-zinc-400 tracking-wider">Accrued Bill</span>
+            <div className="mt-1 font-mono text-base font-semibold text-black">
+              ₹{liveBill}
+            </div>
+            <span className="text-[10px] text-zinc-500">₹{v.ratePerHour}/hr rate</span>
+          </div>
+        </div>
+
+        <div className="mt-3 rounded-xl border border-black/8 bg-zinc-50 px-3 py-2 flex items-center justify-between text-xs text-zinc-600">
+          <span>Parked on</span>
+          <span className="font-mono text-zinc-800">{v.entryTime}</span>
+        </div>
+
+        {/* Actions */}
+        <div className="mt-6 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 rounded-xl border border-black/15 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 transition"
+          >
+            Keep Parked
+          </button>
+          <button
+            type="button"
+            disabled={exitingVehicle}
+            onClick={() => {
+              onExitVehicle(v.number);
+              onClose();
+            }}
+            className="flex-1 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 py-2.5 text-xs font-semibold text-white shadow-lg shadow-rose-600/20 flex items-center justify-center gap-2 transition"
+          >
+            <Icon name="LogOut" className="w-4 h-4" />
+            <span>Exit & Settle (₹{liveBill})</span>
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+function ParkingLot2DMap({
+  slots = [],
+  selectedSlotId = null,
+  inspectedSlotId = null,
+  onSelectSlot,
+  onInspectSlot,
+  onExitVehicle,
+  nowMs,
+  syncedAtMs,
+  exitingVehicle = false,
+  title = "Facility Deck 2D Sensor Map",
+  subtitle = "Live aerial top-down radar view of all 20 bays",
+  className = "",
+}) {
+  const [filter, setFilter] = useState('All');
+  const [inspectedOccupiedSlot, setInspectedOccupiedSlot] = useState(null);
+
+  // Group slots into Rows A..E
+  const rowA = slots.filter((s) => s.slotLabel && s.slotLabel.startsWith('A'));
+  const rowB = slots.filter((s) => s.slotLabel && s.slotLabel.startsWith('B'));
+  const rowC = slots.filter((s) => s.slotLabel && s.slotLabel.startsWith('C'));
+  const rowD = slots.filter((s) => s.slotLabel && s.slotLabel.startsWith('D'));
+  const rowE = slots.filter((s) => s.slotLabel && s.slotLabel.startsWith('E'));
+
+  const totalCount = slots.length;
+  const openCount = slots.filter((s) => s.isAvailable).length;
+  const occupiedCount = totalCount - openCount;
+
+  const handleBayClick = (slot) => {
+    if (!slot.isAvailable) {
+      setInspectedOccupiedSlot(slot);
+      if (onInspectSlot) onInspectSlot(slot);
+    } else {
+      if (onSelectSlot) onSelectSlot(slot);
+    }
+  };
+
+  const isSlotDimmed = (slot) => {
+    if (filter === 'All') return false;
+    if (filter === 'Car') return slot.type !== 'Car';
+    if (filter === 'Bike') return slot.type !== 'Bike';
+    if (filter === 'Truck') return slot.type !== 'Truck';
+    if (filter === 'Available') return !slot.isAvailable;
+    if (filter === 'Occupied') return slot.isAvailable;
+    return false;
+  };
+
+  return (
+    <div className={`w-full rounded-[28px] border border-black/10 bg-[#0d0e12] p-5 md:p-8 shadow-2xl text-white relative overflow-hidden ${className}`}>
+      {/* Background Asphalt Grid texture */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-15"
+        style={{
+          backgroundImage: 'radial-gradient(rgba(255,255,255,0.2) 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+        }}
+      />
+
+      {/* Top Map Header & Controls */}
+      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-6 border-b border-white/10">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-400 font-semibold">
+              Ultrasonic 10Hz Telemetry
+            </span>
+          </div>
+          <h3 className="mt-1 text-xl md:text-2xl font-semibold tracking-tight text-white flex items-center gap-2.5">
+            <span>{title}</span>
+            <span className="text-xs font-normal text-zinc-400 bg-white/10 px-2 py-0.5 rounded-full font-mono">
+              Top View
+            </span>
+          </h3>
+          <p className="text-xs text-zinc-400 mt-0.5">
+            {subtitle}
+          </p>
+        </div>
+
+        {/* Legend & Filter Bar */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Legend indicators */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-mono">
+            <span className="inline-flex items-center gap-1.5 text-emerald-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              {openCount} Open
+            </span>
+            <span className="text-zinc-600">|</span>
+            <span className="inline-flex items-center gap-1.5 text-rose-400">
+              <span className="w-2 h-2 rounded-full bg-rose-500" />
+              {occupiedCount} Occupied
+            </span>
+          </div>
+
+          {/* Filter Pills */}
+          <div className="flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/10">
+            {['All', 'Car', 'Bike', 'Truck', 'Available', 'Occupied'].map((tab) => {
+              const active = filter === tab;
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setFilter(tab)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium transition ${
+                    active
+                      ? 'bg-white text-black font-semibold shadow-sm'
+                      : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {tab}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Blueprint Canvas Container (Horizontally scrollable on small screens) */}
+      <div className="relative z-10 mt-6 overflow-x-auto pb-4">
+        <div className="min-w-[1020px] xl:min-w-full p-5 md:p-6 rounded-2xl bg-[#111216] border border-white/10 relative">
+          
+          {/* North Perimeter Wall Header */}
+          <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10 text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
+            <div className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-zinc-500" />
+              <span>North Perimeter Wall • Level 01 Ground Deck</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-emerald-400 font-semibold">⚡ EV Fast Charging (A1-A2)</span>
+              <span>Emergency Call Box 01</span>
+            </div>
+          </div>
+
+          {/* NORTH WING (Rows A, D, B - 12 bays total facing South toward Central Aisle) */}
+          <div className="flex items-start justify-between gap-5">
+            {/* Zone A: Executive Cars */}
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-mono text-[11px] font-semibold text-zinc-300 uppercase tracking-wider">
+                  Zone A — Executive Decks (A1–A4)
+                </span>
+                <span className="text-[10px] text-zinc-500 font-mono">Car • 3.2m Bay</span>
+              </div>
+              <div className="grid grid-cols-4 gap-3">
+                {rowA.map((slot) => (
+                  <ParkingBay2D
+                    key={slot.slotId}
+                    slot={slot}
+                    facing="south"
+                    isSelected={selectedSlotId === slot.slotId}
+                    isInspected={inspectedSlotId === slot.slotId}
+                    isDimmed={isSlotDimmed(slot)}
+                    onClick={handleBayClick}
+                    nowMs={nowMs}
+                    syncedAtMs={syncedAtMs}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Zone D: Two-Wheelers / Motorcycle Bays */}
+            <div className="w-auto">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-mono text-[11px] font-semibold text-sky-400 uppercase tracking-wider">
+                  Zone D — Two-Wheeler (D1–D4)
+                </span>
+                <span className="text-[10px] text-zinc-500 font-mono">Bike • 1.8m Bay</span>
+              </div>
+              <div className="flex gap-2">
+                {rowD.map((slot) => (
+                  <ParkingBay2D
+                    key={slot.slotId}
+                    slot={slot}
+                    facing="south"
+                    isSelected={selectedSlotId === slot.slotId}
+                    isInspected={inspectedSlotId === slot.slotId}
+                    isDimmed={isSlotDimmed(slot)}
+                    onClick={handleBayClick}
+                    nowMs={nowMs}
+                    syncedAtMs={syncedAtMs}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Zone B: Standard Cars */}
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-mono text-[11px] font-semibold text-zinc-300 uppercase tracking-wider">
+                  Zone B — Standard Decks (B1–B4)
+                </span>
+                <span className="text-[10px] text-zinc-500 font-mono">Car • 3.2m Bay</span>
+              </div>
+              <div className="grid grid-cols-4 gap-3">
+                {rowB.map((slot) => (
+                  <ParkingBay2D
+                    key={slot.slotId}
+                    slot={slot}
+                    facing="south"
+                    isSelected={selectedSlotId === slot.slotId}
+                    isInspected={inspectedSlotId === slot.slotId}
+                    isDimmed={isSlotDimmed(slot)}
+                    onClick={handleBayClick}
+                    nowMs={nowMs}
+                    syncedAtMs={syncedAtMs}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* CENTRAL TWO-WAY DRIVING AISLE / TRANSIT ROADWAY */}
+          <div className="my-6 py-4 px-6 rounded-xl bg-[#090a0d] border-y-2 border-dashed border-white/20 relative flex items-center justify-between overflow-hidden">
+            {/* West Entry Gate */}
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col items-start">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-mono text-[10px] font-bold">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  GATE 01 IN
+                </div>
+                <span className="text-[8px] font-mono text-zinc-500 mt-0.5">LOOP SENSOR</span>
+              </div>
+              <div className="text-xl font-mono text-zinc-400">➔</div>
+              {/* Barrier arm graphic */}
+              <div
+                className="w-12 h-2 rounded border border-amber-500"
+                style={{ backgroundImage: 'repeating-linear-gradient(45deg, #eab308, #eab308 6px, #18181b 6px, #18181b 12px)' }}
+              />
+            </div>
+
+            {/* Central Transit Markings & Pedestrian Crossing */}
+            <div className="flex items-center gap-8">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-lg text-amber-400">➔</span>
+                <span className="font-mono text-[11px] font-bold text-zinc-400 tracking-wider">
+                  TWO-WAY AISLE 10 KM/H
+                </span>
+                <span className="font-mono text-lg text-amber-400">➔</span>
+              </div>
+
+              {/* Pedestrian Zebra Crosswalk */}
+              <div className="flex flex-col items-center">
+                <div className="flex gap-1.5 py-1 px-3 bg-white/5 rounded border border-white/10">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="w-2.5 h-8 bg-white/80 rounded-sm" />
+                  ))}
+                </div>
+                <span className="mt-1 font-mono text-[8px] text-zinc-400 uppercase tracking-widest">
+                  LOBBY & ELEVATORS ➔
+                </span>
+              </div>
+            </div>
+
+            {/* East Exit Gate */}
+            <div className="flex items-center gap-3">
+              {/* Barrier arm graphic */}
+              <div
+                className="w-12 h-2 rounded border border-amber-500"
+                style={{ backgroundImage: 'repeating-linear-gradient(45deg, #eab308, #eab308 6px, #18181b 6px, #18181b 12px)' }}
+              />
+              <div className="text-xl font-mono text-zinc-400">➔</div>
+              <div className="flex flex-col items-end">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-rose-500/20 border border-rose-500/40 text-rose-400 font-mono text-[10px] font-bold">
+                  <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
+                  GATE 02 OUT
+                </div>
+                <span className="text-[8px] font-mono text-zinc-500 mt-0.5">AUTO KIOSK</span>
+              </div>
+            </div>
+          </div>
+
+          {/* SOUTH WING (Rows C, Elevator Lobby, Row E - Vehicles facing North toward Central Aisle) */}
+          <div className="flex items-end justify-between gap-5">
+            {/* Zone C: Express Cars */}
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-mono text-[11px] font-semibold text-zinc-300 uppercase tracking-wider">
+                  Zone C — Express Decks (C1–C4)
+                </span>
+                <span className="text-[10px] text-zinc-500 font-mono">Car • 3.2m Bay</span>
+              </div>
+              <div className="grid grid-cols-4 gap-3">
+                {rowC.map((slot) => (
+                  <ParkingBay2D
+                    key={slot.slotId}
+                    slot={slot}
+                    facing="north"
+                    isSelected={selectedSlotId === slot.slotId}
+                    isInspected={inspectedSlotId === slot.slotId}
+                    isDimmed={isSlotDimmed(slot)}
+                    onClick={handleBayClick}
+                    nowMs={nowMs}
+                    syncedAtMs={syncedAtMs}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Central Elevator Lobby & Pay Kiosk Hub */}
+            <div className="w-56 h-[148px] rounded-xl bg-[#14151b] border border-zinc-700/80 p-3 flex flex-col justify-between items-center text-center shadow-inner">
+              <div className="w-full flex items-center justify-between pb-1.5 border-b border-white/10 text-[9px] font-mono text-zinc-400 uppercase tracking-wider">
+                <span>Core 01</span>
+                <span className="text-emerald-400">● Active</span>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center justify-center gap-2 text-white">
+                  <span className="font-mono text-xs font-bold bg-white/10 px-2 py-0.5 rounded">🛗 ELEVATORS</span>
+                </div>
+                <div className="font-mono text-[9px] text-zinc-400">
+                  LEVEL 1 ➔ GROUND & MEZZANINE
+                </div>
+                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono text-[8px] font-semibold border border-blue-500/30">
+                  💳 AUTO-PAY KIOSK 01
+                </div>
+              </div>
+              <div className="w-full pt-1 border-t border-white/10 text-[8px] font-mono text-zinc-500">
+                ▲ WALKWAY TO CROSSWALK
+              </div>
+            </div>
+
+            {/* Zone E: Heavy Trucks */}
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-mono text-[11px] font-semibold text-amber-400 uppercase tracking-wider">
+                  Zone E — Heavy Trucks (E1–E4)
+                </span>
+                <span className="text-[10px] text-zinc-500 font-mono">Truck • 4.8m Heavy Dock</span>
+              </div>
+              <div className="grid grid-cols-4 gap-3">
+                {rowE.map((slot) => (
+                  <ParkingBay2D
+                    key={slot.slotId}
+                    slot={slot}
+                    facing="north"
+                    isSelected={selectedSlotId === slot.slotId}
+                    isInspected={inspectedSlotId === slot.slotId}
+                    isDimmed={isSlotDimmed(slot)}
+                    onClick={handleBayClick}
+                    nowMs={nowMs}
+                    syncedAtMs={syncedAtMs}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* South Perimeter Wall Footer */}
+          <div className="flex items-center justify-between pt-4 mt-4 border-t border-white/10 text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+            <div className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />
+              <span>South Perimeter Wall • Heavy Logistics & Core Elevator Zone</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span>Fire Hose Station 02</span>
+              <span>Authorized Personnel Only</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Facility Legend & Hint Footer */}
+      <div className="relative z-10 mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-zinc-400 pt-3 border-t border-white/10">
+        <div className="flex items-center gap-4">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_#22c55e]" />
+            <span>Green = Available Bay (Click to Park)</span>
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_6px_#ef4444]" />
+            <span>Red = Occupied (Click to Inspect / Settle)</span>
+          </span>
+        </div>
+        <div className="font-mono text-[11px] text-zinc-500">
+          Scroll horizontally on mobile ↔
+        </div>
+      </div>
+
+      {/* Occupied Bay Inspector Modal */}
+      {inspectedOccupiedSlot && (
+        <OccupiedSlotModal2D
+          slot={inspectedOccupiedSlot}
+          onClose={() => setInspectedOccupiedSlot(null)}
+          onExitVehicle={onExitVehicle}
+          nowMs={nowMs}
+          syncedAtMs={syncedAtMs}
+          exitingVehicle={exitingVehicle}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ============================================================================
    FLOATING LIQUID GLASS CAPSULE NAVBAR (Inspired by MovieGo+)
    ============================================================================ */
 function Navbar({
@@ -713,6 +1653,9 @@ function MobileNavBar({ currentPage, onNavigate, totalSlots, activeTicketsCount 
 function HomePage({
   stats,
   tickets,
+  slots = [],
+  nowMs,
+  syncedAtMs,
   vehicleNumber,
   setVehicleNumber,
   vehicleType,
@@ -913,6 +1856,28 @@ function HomePage({
               </motion.div>
             </TiltCard3D>
           </div>
+
+          {/* Interactive 2D Top-Down Aerial Floor Map */}
+          <div className="pt-6">
+            <ParkingLot2DMap
+              slots={slots}
+              selectedSlotId={selectedSlot?.slotId}
+              onSelectSlot={(slot) => {
+                setSelectedSlot(slot);
+                setVehicleType(slot.type);
+                const el = document.getElementById('park-vehicle-card');
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }}
+              onExitVehicle={onExitVehicle}
+              nowMs={nowMs}
+              syncedAtMs={syncedAtMs}
+              exitingVehicle={exitingVehicle}
+              title="Facility Deck 2D Sensor Map"
+              subtitle="Live aerial top-down radar view of all 20 bays with ultrasonic occupancy beacons"
+            />
+          </div>
         </section>
 
         {/* 2. Gate Operations: Park Vehicle & Exit Vehicle */}
@@ -928,7 +1893,7 @@ function HomePage({
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Park Vehicle Card */}
-            <div className="rounded-[24px] border border-black/10 bg-white p-7 sm:p-9 shadow-[0_20px_50px_rgba(15,23,42,0.05)] flex flex-col justify-between">
+            <div id="park-vehicle-card" className="rounded-[24px] border border-black/10 bg-white p-7 sm:p-9 shadow-[0_20px_50px_rgba(15,23,42,0.05)] flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between border-b border-black/8 pb-4">
                   <div>
@@ -1265,6 +2230,7 @@ function ParkingSlotsPage({
   syncedAtMs,
 }) {
   const [statusFilter, setStatusFilter] = useState('All');
+  const [viewMode, setViewMode] = useState('2d');
   const [searchQuery, setSearchQuery] = useState('');
   const [inspectedSlotId, setInspectedSlotId] = useState(null);
   const [inspector3D, setInspector3D] = useState(true);
@@ -1461,20 +2427,155 @@ function ParkingSlotsPage({
           </div>
         </div>
 
-        <div className="relative w-full lg:w-72">
-          <Icon name="Search" className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search bay (A2) or plate..."
-            className="w-full rounded-full border border-black/15 bg-[#fcfcfc] pl-10 pr-4 py-2 text-xs text-black placeholder:text-zinc-400 focus:border-black focus:bg-white focus:outline-none"
-          />
+        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+          {/* View Mode Toggle: 2D Floor Map vs Bay Grid */}
+          <div className="flex items-center gap-1 rounded-full bg-zinc-100 p-1">
+            <button
+              type="button"
+              onClick={() => setViewMode('2d')}
+              className={`relative rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                viewMode === '2d' ? 'text-white' : 'text-zinc-600 hover:text-black'
+              }`}
+            >
+              {viewMode === '2d' && (
+                <motion.span
+                  layoutId="slots-view-mode-pill"
+                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  className="absolute inset-0 rounded-full bg-black"
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-1.5">
+                <Icon name="Map" className="w-3.5 h-3.5" />
+                <span>2D Floor Map</span>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setViewMode('grid')}
+              className={`relative rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                viewMode === 'grid' ? 'text-white' : 'text-zinc-600 hover:text-black'
+              }`}
+            >
+              {viewMode === 'grid' && (
+                <motion.span
+                  layoutId="slots-view-mode-pill"
+                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  className="absolute inset-0 rounded-full bg-black"
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-1.5">
+                <Icon name="Grid" className="w-3.5 h-3.5" />
+                <span>Bay Grid</span>
+              </span>
+            </button>
+          </div>
+
+          <div className="relative w-full sm:w-60">
+            <Icon name="Search" className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search bay (A2) or plate..."
+              className="w-full rounded-full border border-black/15 bg-[#fcfcfc] pl-10 pr-4 py-2 text-xs text-black placeholder:text-zinc-400 focus:border-black focus:bg-white focus:outline-none"
+            />
+          </div>
         </div>
       </section>
 
-      {/* Zone Grid + Optional Inspector */}
-      <div className={`grid grid-cols-1 ${inspectedSlot ? 'lg:grid-cols-12' : ''} gap-8 items-start`}>
+      {/* 2D Floor Map View */}
+      {viewMode === '2d' && (
+        <section className="space-y-6">
+          <ParkingLot2DMap
+            slots={filteredSlots}
+            selectedSlotId={inspectedSlotId}
+            inspectedSlotId={inspectedSlotId}
+            onSelectSlot={(slot) => setInspectedSlotId(slot.slotId)}
+            onInspectSlot={(slot) => setInspectedSlotId(slot.slotId)}
+            onExitVehicle={onExitVehicle}
+            nowMs={nowMs}
+            syncedAtMs={syncedAtMs}
+            exitingVehicle={exitingVehicle}
+            title="Interactive 2D Deck Floor Map"
+            subtitle="Architectural aerial view — click any bay to quick-park or inspect stay"
+          />
+
+          {/* Quick Inspector Drawer when a bay is selected in 2D view */}
+          {inspectedSlot && (
+            <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-zinc-900 text-white flex items-center justify-center font-mono font-bold text-lg">
+                  {inspectedSlot.slotLabel}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-semibold text-black">
+                      Bay [{inspectedSlot.slotLabel}] • {inspectedSlot.type}
+                    </h3>
+                    <span
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold ${
+                        inspectedSlot.isAvailable
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : 'bg-rose-100 text-rose-800'
+                      }`}
+                    >
+                      {inspectedSlot.isAvailable ? 'AVAILABLE' : 'OCCUPIED'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-500 mt-0.5">
+                    {inspectedSlot.isAvailable
+                      ? `Ready for immediate parking at ₹${VEHICLE_META[inspectedSlot.type]?.rate}/hr`
+                      : `Vehicle ${inspectedSlot.vehicle?.number} parked since ${inspectedSlot.vehicle?.entryTime}`}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 w-full md:w-auto">
+                {inspectedSlot.isAvailable ? (
+                  <form onSubmit={handleQuickPark} className="flex items-center gap-2 w-full md:w-auto">
+                    <input
+                      type="text"
+                      value={quickPlate}
+                      onChange={(e) => setQuickPlate(e.target.value.toUpperCase())}
+                      placeholder="e.g. KA-05-AB-1234"
+                      className="rounded-xl border border-black/15 px-3 py-2 text-xs font-mono uppercase text-black placeholder:text-zinc-400 focus:border-black focus:outline-none"
+                    />
+                    <button
+                      type="submit"
+                      disabled={quickParking || !quickPlate.trim()}
+                      className="rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold px-4 py-2 shadow transition whitespace-nowrap"
+                    >
+                      {quickParking ? 'Parking...' : 'Park Here'}
+                    </button>
+                  </form>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={exitingVehicle === inspectedSlot.vehicle?.number}
+                    onClick={() => onExitVehicle(inspectedSlot.vehicle?.number)}
+                    className="rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white text-xs font-semibold px-5 py-2.5 shadow transition flex items-center gap-2"
+                  >
+                    <Icon name="LogOut" className="w-4 h-4" />
+                    <span>Exit Vehicle</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setInspectedSlotId(null)}
+                  className="rounded-xl border border-black/15 px-3 py-2 text-xs text-zinc-600 hover:bg-zinc-100 transition"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Zone Grid + Optional Inspector (when in 'grid' viewMode) */}
+      {viewMode === 'grid' && (
+        <div className={`grid grid-cols-1 ${inspectedSlot ? 'lg:grid-cols-12' : ''} gap-8 items-start`}>
         <div className={inspectedSlot ? 'lg:col-span-8 space-y-10' : 'space-y-10'}>
           {loading ? (
             <div className="rounded-2xl border border-black/10 bg-[#fcfcfc] p-12 text-center text-sm text-zinc-500">
@@ -1712,6 +2813,7 @@ function ParkingSlotsPage({
           )}
         </AnimatePresence>
       </div>
+      )}
     </motion.div>
   );
 }
@@ -2509,6 +3611,9 @@ function App() {
             <HomePage
               stats={stats}
               tickets={tickets}
+              slots={slots}
+              nowMs={nowMs}
+              syncedAtMs={syncedAtMs}
               vehicleNumber={vehicleNumber}
               setVehicleNumber={setVehicleNumber}
               vehicleType={vehicleType}
