@@ -894,72 +894,61 @@ function ParkingBay2D({
   const isBike = slot.type === 'Bike';
   const isTruck = slot.type === 'Truck';
   const v = slot.vehicle;
-
-  const bumperAtTop = facing === 'south';
+  const rate = VEHICLE_META[slot.type]?.rate ?? 50;
 
   return (
     <div
       onClick={() => onClick(slot)}
       className={`group relative flex flex-col justify-between rounded-xl transition-all duration-200 cursor-pointer select-none ${
-        isBike ? 'w-16 sm:w-18 md:w-20 min-h-[142px]' : isTruck ? 'w-22 sm:w-24 md:w-26 min-h-[162px]' : 'w-20 sm:w-22 md:w-24 min-h-[142px]'
+        isBike
+          ? 'w-[72px] sm:w-[80px] h-[132px]'
+          : isTruck
+          ? 'w-[96px] sm:w-[104px] h-[154px]'
+          : 'w-[82px] sm:w-[90px] h-[132px]'
       } ${
         isDimmed
-          ? 'opacity-25 grayscale'
+          ? 'opacity-20 grayscale pointer-events-none'
           : isSelected
-          ? 'ring-2 ring-blue-500 bg-[#1e2330] shadow-[0_0_22px_rgba(59,130,246,0.5)]'
+          ? 'ring-2 ring-blue-500 bg-[#1a1f2b] shadow-[0_0_18px_rgba(59,130,246,0.45)]'
           : isInspected
-          ? 'ring-2 ring-white bg-[#1a1c22] shadow-[0_0_20px_rgba(255,255,255,0.25)]'
-          : 'bg-[#131418] hover:bg-[#181a20] hover:ring-1 hover:ring-white/30 hover:shadow-lg'
-      } border border-dashed ${
-        isAvailable ? 'border-emerald-500/35' : 'border-rose-500/35'
+          ? 'ring-2 ring-white bg-[#1b1c22] shadow-[0_0_18px_rgba(255,255,255,0.25)]'
+          : 'bg-[#131418] hover:bg-[#181920] hover:border-white/30'
+      } border ${
+        isAvailable ? 'border-white/10 hover:border-emerald-500/40' : 'border-white/10 hover:border-rose-500/40'
       } p-2`}
       title={
         isAvailable
-          ? `Bay ${slot.slotLabel} (${slot.type}) — Available. Click to park.`
-          : `Bay ${slot.slotLabel} — Occupied by ${v?.number}. Click to inspect / exit.`
+          ? `Bay ${slot.slotLabel} (${slot.type}) — Available at ₹${rate}/hr. Click to park.`
+          : `Bay ${slot.slotLabel} — Occupied by ${v?.number}. Click to inspect & exit.`
       }
     >
-      {/* Rubber Wheel Bumper (when at top) */}
-      {bumperAtTop && (
-        <div className="w-full flex justify-center mb-1">
-          <div className="h-1.5 w-14 rounded-full bg-zinc-700 border border-zinc-600 shadow-inner flex items-center justify-around px-1">
-            <span className="w-1.5 h-0.5 bg-amber-400 rounded-sm" />
-            <span className="w-1.5 h-0.5 bg-amber-400 rounded-sm" />
-            <span className="w-1.5 h-0.5 bg-amber-400 rounded-sm" />
-          </div>
-        </div>
-      )}
-
-      {/* Bay Header: Stall ID & LED Sensor Beacon */}
+      {/* Top Header: Bay ID & Sensor LED */}
       <div className="flex items-center justify-between w-full">
         <span
-          className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded tracking-wider ${
-            isAvailable
-              ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-              : 'bg-rose-500/15 text-rose-300 border border-rose-500/30'
+          className={`font-mono text-[11px] font-bold ${
+            isAvailable ? 'text-zinc-200' : 'text-zinc-400'
           }`}
         >
           {slot.slotLabel}
         </span>
 
-        {/* Overhead Ultrasonic Sensor Indicator */}
-        <div className="flex items-center gap-1">
+        {/* Status Sensor LED */}
+        <div className="flex items-center">
           {isAvailable ? (
-            <div className="relative flex items-center justify-center w-2.5 h-2.5">
-              <span className="absolute w-3 h-3 rounded-full bg-emerald-400/40 animate-ping" />
-              <span className="relative w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_#22c55e]" />
-            </div>
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_6px_#10b981]" />
+            </span>
           ) : (
-            <div className="relative flex items-center justify-center w-2.5 h-2.5">
-              <span className="absolute w-3 h-3 rounded-full bg-rose-400/35 animate-pulse" />
-              <span className="relative w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_6px_#ef4444]" />
-            </div>
+            <span className="relative flex h-2 w-2">
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_6px_#f43f5e]" />
+            </span>
           )}
         </div>
       </div>
 
-      {/* Bay Center: Occupied Vehicle SVG OR Available Empty Stall Markings */}
-      <div className="flex-1 flex flex-col items-center justify-center my-1 relative">
+      {/* Bay Center: Occupied Vehicle SVG or Clean Available State */}
+      <div className="flex-1 flex flex-col items-center justify-center relative my-1">
         {!isAvailable && v ? (
           <div className="relative w-full flex items-center justify-center">
             <TopDownVehicleSvg
@@ -967,45 +956,31 @@ function ParkingBay2D({
               plate={v.number}
               facing={facing}
             />
-            {/* Quick hover indicator with plate */}
+            {/* Minimal clean hover pill */}
             <div className="pointer-events-none absolute -bottom-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/90 backdrop-blur-md px-1.5 py-0.5 rounded border border-white/20 text-[9px] font-mono text-white whitespace-nowrap z-20 shadow-lg">
               {v.number}
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center text-center py-2">
-            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest font-semibold">
-              {slot.type}
+          <div className="flex flex-col items-center justify-center text-center">
+            <span className="text-[11px] font-mono text-zinc-500 group-hover:text-emerald-400 transition font-medium">
+              ₹{rate}/h
             </span>
-            <span className="text-[9px] font-mono text-emerald-400/80 mt-0.5">
-              ₹{VEHICLE_META[slot.type]?.rate ?? 50}/h
+            <span className="mt-1 text-[9px] font-mono uppercase tracking-wider text-zinc-600 group-hover:text-emerald-400 font-bold transition">
+              Free
             </span>
-            <div className="mt-2 text-[8px] font-mono uppercase tracking-wider text-emerald-400 font-bold bg-emerald-950/40 border border-emerald-500/20 px-1.5 py-0.5 rounded opacity-80 group-hover:opacity-100 group-hover:bg-emerald-500 group-hover:text-black transition">
-              OPEN
-            </div>
           </div>
         )}
       </div>
 
-      {/* Rubber Wheel Bumper (when at bottom) */}
-      {!bumperAtTop && (
-        <div className="w-full flex justify-center mt-1">
-          <div className="h-1.5 w-14 rounded-full bg-zinc-700 border border-zinc-600 shadow-inner flex items-center justify-around px-1">
-            <span className="w-1.5 h-0.5 bg-amber-400 rounded-sm" />
-            <span className="w-1.5 h-0.5 bg-amber-400 rounded-sm" />
-            <span className="w-1.5 h-0.5 bg-amber-400 rounded-sm" />
-          </div>
-        </div>
-      )}
-
-      {/* Entrance threshold markings facing the aisle */}
+      {/* Painted threshold stop line facing aisle */}
       <div
         className={`w-full flex justify-between px-1 ${
-          bumperAtTop ? 'border-b-2 border-white/40 pt-0.5' : 'border-t-2 border-white/40 pb-0.5'
+          facing === 'south' ? 'border-b border-white/20 pb-0.5' : 'border-t border-white/20 pt-0.5'
         }`}
       >
-        <span className="w-1.5 h-0.5 bg-white/60" />
-        <span className="w-1.5 h-0.5 bg-white/60" />
+        <span className="w-1.5 h-0.5 bg-white/40 rounded-sm" />
+        <span className="w-1.5 h-0.5 bg-white/40 rounded-sm" />
       </div>
     </div>
   );
@@ -1162,7 +1137,7 @@ function ParkingLot2DMap({
   };
 
   return (
-    <div className={`w-full rounded-[28px] border border-black/10 bg-[#0d0e12] p-5 md:p-8 shadow-2xl text-white relative overflow-hidden ${className}`}>
+    <div className={`w-full rounded-[28px] border border-black/10 bg-[#0d0e12] p-5 md:p-7 shadow-2xl text-white relative overflow-hidden ${className}`}>
       {/* Background Asphalt Grid texture */}
       <div
         className="pointer-events-none absolute inset-0 opacity-15"
@@ -1172,8 +1147,8 @@ function ParkingLot2DMap({
         }}
       />
 
-      {/* Top Map Header & Controls */}
-      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-6 border-b border-white/10">
+      {/* Clean Top Map Header & Controls */}
+      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-5 border-b border-white/10">
         <div>
           <div className="flex items-center gap-2">
             <span className="relative flex h-2 w-2">
@@ -1181,12 +1156,12 @@ function ParkingLot2DMap({
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-400 font-semibold">
-              Ultrasonic 10Hz Telemetry
+              Live Sensor Telemetry
             </span>
           </div>
           <h3 className="mt-1 text-xl md:text-2xl font-semibold tracking-tight text-white flex items-center gap-2.5">
             <span>{title}</span>
-            <span className="text-xs font-normal text-zinc-400 bg-white/10 px-2 py-0.5 rounded-full font-mono">
+            <span className="text-xs font-normal text-zinc-400 bg-white/10 px-2.5 py-0.5 rounded-full font-mono">
               Top View
             </span>
           </h3>
@@ -1196,8 +1171,7 @@ function ParkingLot2DMap({
         </div>
 
         {/* Legend & Filter Bar */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Legend indicators */}
+        <div className="flex flex-wrap items-center gap-2.5">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-mono">
             <span className="inline-flex items-center gap-1.5 text-emerald-400">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -1210,7 +1184,6 @@ function ParkingLot2DMap({
             </span>
           </div>
 
-          {/* Filter Pills */}
           <div className="flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/10">
             {['All', 'Car', 'Bike', 'Truck', 'Available', 'Occupied'].map((tab) => {
               const active = filter === tab;
@@ -1233,260 +1206,234 @@ function ParkingLot2DMap({
         </div>
       </div>
 
-      {/* Blueprint Canvas Container (Horizontally scrollable on small screens) */}
-      <div className="relative z-10 mt-6 overflow-x-auto pb-4">
-        <div className="min-w-[1020px] xl:min-w-full p-5 md:p-6 rounded-2xl bg-[#111216] border border-white/10 relative">
+      {/* Blueprint Canvas Container */}
+      <div className="relative z-10 mt-5 overflow-x-auto pb-2">
+        <div className="min-w-[960px] p-5 rounded-2xl bg-[#111216] border border-white/10 space-y-4">
           
-          {/* North Perimeter Wall Header */}
-          <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10 text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
-            <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-zinc-500" />
-              <span>North Perimeter Wall • Level 01 Ground Deck</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-emerald-400 font-semibold">⚡ EV Fast Charging (A1-A2)</span>
-              <span>Emergency Call Box 01</span>
-            </div>
-          </div>
-
-          {/* NORTH WING (Rows A, D, B - 12 bays total facing South toward Central Aisle) */}
-          <div className="flex items-start justify-between gap-5">
-            {/* Zone A: Executive Cars */}
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-[11px] font-semibold text-zinc-300 uppercase tracking-wider">
-                  Zone A — Executive Decks (A1–A4)
-                </span>
-                <span className="text-[10px] text-zinc-500 font-mono">Car • 3.2m Bay</span>
-              </div>
-              <div className="grid grid-cols-4 gap-3">
-                {rowA.map((slot) => (
-                  <ParkingBay2D
-                    key={slot.slotId}
-                    slot={slot}
-                    facing="south"
-                    isSelected={selectedSlotId === slot.slotId}
-                    isInspected={inspectedSlotId === slot.slotId}
-                    isDimmed={isSlotDimmed(slot)}
-                    onClick={handleBayClick}
-                    nowMs={nowMs}
-                    syncedAtMs={syncedAtMs}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Zone D: Two-Wheelers / Motorcycle Bays */}
-            <div className="w-auto">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-[11px] font-semibold text-sky-400 uppercase tracking-wider">
-                  Zone D — Two-Wheeler (D1–D4)
-                </span>
-                <span className="text-[10px] text-zinc-500 font-mono">Bike • 1.8m Bay</span>
-              </div>
-              <div className="flex gap-2">
-                {rowD.map((slot) => (
-                  <ParkingBay2D
-                    key={slot.slotId}
-                    slot={slot}
-                    facing="south"
-                    isSelected={selectedSlotId === slot.slotId}
-                    isInspected={inspectedSlotId === slot.slotId}
-                    isDimmed={isSlotDimmed(slot)}
-                    onClick={handleBayClick}
-                    nowMs={nowMs}
-                    syncedAtMs={syncedAtMs}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Zone B: Standard Cars */}
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-[11px] font-semibold text-zinc-300 uppercase tracking-wider">
-                  Zone B — Standard Decks (B1–B4)
-                </span>
-                <span className="text-[10px] text-zinc-500 font-mono">Car • 3.2m Bay</span>
-              </div>
-              <div className="grid grid-cols-4 gap-3">
-                {rowB.map((slot) => (
-                  <ParkingBay2D
-                    key={slot.slotId}
-                    slot={slot}
-                    facing="south"
-                    isSelected={selectedSlotId === slot.slotId}
-                    isInspected={inspectedSlotId === slot.slotId}
-                    isDimmed={isSlotDimmed(slot)}
-                    onClick={handleBayClick}
-                    nowMs={nowMs}
-                    syncedAtMs={syncedAtMs}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* CENTRAL TWO-WAY DRIVING AISLE / TRANSIT ROADWAY */}
-          <div className="my-6 py-4 px-6 rounded-xl bg-[#090a0d] border-y-2 border-dashed border-white/20 relative flex items-center justify-between overflow-hidden">
-            {/* West Entry Gate */}
-            <div className="flex items-center gap-3">
-              <div className="flex flex-col items-start">
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-mono text-[10px] font-bold">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
-                  GATE 01 IN
-                </div>
-                <span className="text-[8px] font-mono text-zinc-500 mt-0.5">LOOP SENSOR</span>
-              </div>
-              <div className="text-xl font-mono text-zinc-400">➔</div>
-              {/* Barrier arm graphic */}
-              <div
-                className="w-12 h-2 rounded border border-amber-500"
-                style={{ backgroundImage: 'repeating-linear-gradient(45deg, #eab308, #eab308 6px, #18181b 6px, #18181b 12px)' }}
-              />
-            </div>
-
-            {/* Central Transit Markings & Pedestrian Crossing */}
-            <div className="flex items-center gap-8">
+          {/* DECK 1: NORTH DECK — PASSENGER CARS (Rows A & B - 8 bays facing South) */}
+          <div className="rounded-xl bg-[#0b0c0f] border border-white/5 p-4">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-lg text-amber-400">➔</span>
-                <span className="font-mono text-[11px] font-bold text-zinc-400 tracking-wider">
-                  TWO-WAY AISLE 10 KM/H
+                <span className="font-mono text-xs font-bold text-white uppercase tracking-wider">
+                  North Deck • Passenger Cars (Rows A & B)
                 </span>
-                <span className="font-mono text-lg text-amber-400">➔</span>
+                <span className="text-[10px] text-zinc-400 font-mono bg-white/5 px-2 py-0.5 rounded">
+                  8 Bays • ₹50/hr
+                </span>
               </div>
+              <div className="text-[10px] font-mono text-emerald-400">
+                ⚡ EV Charging Ready (A1–A2)
+              </div>
+            </div>
 
-              {/* Pedestrian Zebra Crosswalk */}
-              <div className="flex flex-col items-center">
-                <div className="flex gap-1.5 py-1 px-3 bg-white/5 rounded border border-white/10">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="w-2.5 h-8 bg-white/80 rounded-sm" />
+            <div className="flex items-center justify-between gap-6">
+              {/* Row A */}
+              <div className="flex-1">
+                <span className="block text-[10px] font-mono text-zinc-400 uppercase tracking-wider mb-2">
+                  Row A — Executive Bays (A1–A4)
+                </span>
+                <div className="grid grid-cols-4 gap-3">
+                  {rowA.map((slot) => (
+                    <ParkingBay2D
+                      key={slot.slotId}
+                      slot={slot}
+                      facing="south"
+                      isSelected={selectedSlotId === slot.slotId}
+                      isInspected={inspectedSlotId === slot.slotId}
+                      isDimmed={isSlotDimmed(slot)}
+                      onClick={handleBayClick}
+                      nowMs={nowMs}
+                      syncedAtMs={syncedAtMs}
+                    />
                   ))}
                 </div>
-                <span className="mt-1 font-mono text-[8px] text-zinc-400 uppercase tracking-widest">
-                  LOBBY & ELEVATORS ➔
+              </div>
+
+              {/* Row B */}
+              <div className="flex-1">
+                <span className="block text-[10px] font-mono text-zinc-400 uppercase tracking-wider mb-2">
+                  Row B — Standard Bays (B1–B4)
                 </span>
+                <div className="grid grid-cols-4 gap-3">
+                  {rowB.map((slot) => (
+                    <ParkingBay2D
+                      key={slot.slotId}
+                      slot={slot}
+                      facing="south"
+                      isSelected={selectedSlotId === slot.slotId}
+                      isInspected={inspectedSlotId === slot.slotId}
+                      isDimmed={isSlotDimmed(slot)}
+                      onClick={handleBayClick}
+                      nowMs={nowMs}
+                      syncedAtMs={syncedAtMs}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* East Exit Gate */}
+          {/* CENTRAL TRANSIT DRIVEWAY */}
+          <div className="py-3 px-6 rounded-xl bg-[#07080a] border-y border-dashed border-white/20 flex items-center justify-between">
+            {/* Entry Gate */}
             <div className="flex items-center gap-3">
-              {/* Barrier arm graphic */}
-              <div
-                className="w-12 h-2 rounded border border-amber-500"
-                style={{ backgroundImage: 'repeating-linear-gradient(45deg, #eab308, #eab308 6px, #18181b 6px, #18181b 12px)' }}
-              />
-              <div className="text-xl font-mono text-zinc-400">➔</div>
-              <div className="flex flex-col items-end">
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-rose-500/20 border border-rose-500/40 text-rose-400 font-mono text-[10px] font-bold">
-                  <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
-                  GATE 02 OUT
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-mono text-[11px] font-bold">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                GATE 01 IN
+              </span>
+              <span className="font-mono text-base text-zinc-400">➔</span>
+            </div>
+
+            {/* Aisle markings & Zebra Crossing */}
+            <div className="flex items-center gap-8">
+              <span className="font-mono text-xs text-amber-400/90 font-semibold tracking-widest">
+                ➔ TWO-WAY TRANSIT AISLE • 10 KM/H ➔
+              </span>
+
+              {/* Pedestrian Crosswalk */}
+              <div className="flex flex-col items-center">
+                <div className="flex gap-1.5 py-0.5 px-3 bg-white/5 rounded">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="w-2.5 h-6 bg-white/80 rounded-sm" />
+                  ))}
                 </div>
-                <span className="text-[8px] font-mono text-zinc-500 mt-0.5">AUTO KIOSK</span>
+                <span className="text-[8px] font-mono text-zinc-400 uppercase tracking-wider mt-0.5">
+                  Lobby Crosswalk
+                </span>
+              </div>
+            </div>
+
+            {/* Exit Gate */}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-base text-zinc-400">➔</span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-400 font-mono text-[11px] font-bold">
+                <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
+                GATE 02 OUT
+              </span>
+            </div>
+          </div>
+
+          {/* DECK 2: SOUTH DECK — EXPRESS CARS & TWO-WHEELERS (Rows C & D - 8 bays facing North) */}
+          <div className="rounded-xl bg-[#0b0c0f] border border-white/5 p-4">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-bold text-white uppercase tracking-wider">
+                  South Deck • Express Cars & Two-Wheelers (Rows C & D)
+                </span>
+                <span className="text-[10px] text-zinc-400 font-mono bg-white/5 px-2 py-0.5 rounded">
+                  8 Bays
+                </span>
+              </div>
+              <div className="text-[10px] font-mono text-zinc-400">
+                Core Elevator & Ground Access
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-6">
+              {/* Row C: Express Cars */}
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+                    Row C — Express Bays (C1–C4)
+                  </span>
+                  <span className="text-[9px] font-mono text-zinc-500">₹50/h</span>
+                </div>
+                <div className="grid grid-cols-4 gap-3">
+                  {rowC.map((slot) => (
+                    <ParkingBay2D
+                      key={slot.slotId}
+                      slot={slot}
+                      facing="north"
+                      isSelected={selectedSlotId === slot.slotId}
+                      isInspected={inspectedSlotId === slot.slotId}
+                      isDimmed={isSlotDimmed(slot)}
+                      onClick={handleBayClick}
+                      nowMs={nowMs}
+                      syncedAtMs={syncedAtMs}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Row D: Two-Wheelers / Bikes */}
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-mono text-sky-400 uppercase tracking-wider font-semibold">
+                    Row D — Two-Wheeler Pavilion (D1–D4)
+                  </span>
+                  <span className="text-[9px] font-mono text-sky-400/80">₹20/h</span>
+                </div>
+                <div className="grid grid-cols-4 gap-3">
+                  {rowD.map((slot) => (
+                    <ParkingBay2D
+                      key={slot.slotId}
+                      slot={slot}
+                      facing="north"
+                      isSelected={selectedSlotId === slot.slotId}
+                      isInspected={inspectedSlotId === slot.slotId}
+                      isDimmed={isSlotDimmed(slot)}
+                      onClick={handleBayClick}
+                      nowMs={nowMs}
+                      syncedAtMs={syncedAtMs}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* SOUTH WING (Rows C, Elevator Lobby, Row E - Vehicles facing North toward Central Aisle) */}
-          <div className="flex items-end justify-between gap-5">
-            {/* Zone C: Express Cars */}
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-[11px] font-semibold text-zinc-300 uppercase tracking-wider">
-                  Zone C — Express Decks (C1–C4)
+          {/* DECK 3: COMMERCIAL LOGISTICS WING — HEAVY TRUCKS (Row E - 4 bays) */}
+          <div className="rounded-xl bg-[#0b0c0f] border border-white/5 p-4">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-bold text-white uppercase tracking-wider">
+                  Logistics Wing • Heavy Commercial Trucks (Row E)
                 </span>
-                <span className="text-[10px] text-zinc-500 font-mono">Car • 3.2m Bay</span>
-              </div>
-              <div className="grid grid-cols-4 gap-3">
-                {rowC.map((slot) => (
-                  <ParkingBay2D
-                    key={slot.slotId}
-                    slot={slot}
-                    facing="north"
-                    isSelected={selectedSlotId === slot.slotId}
-                    isInspected={inspectedSlotId === slot.slotId}
-                    isDimmed={isSlotDimmed(slot)}
-                    onClick={handleBayClick}
-                    nowMs={nowMs}
-                    syncedAtMs={syncedAtMs}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Central Elevator Lobby & Pay Kiosk Hub */}
-            <div className="w-56 h-[148px] rounded-xl bg-[#14151b] border border-zinc-700/80 p-3 flex flex-col justify-between items-center text-center shadow-inner">
-              <div className="w-full flex items-center justify-between pb-1.5 border-b border-white/10 text-[9px] font-mono text-zinc-400 uppercase tracking-wider">
-                <span>Core 01</span>
-                <span className="text-emerald-400">● Active</span>
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center justify-center gap-2 text-white">
-                  <span className="font-mono text-xs font-bold bg-white/10 px-2 py-0.5 rounded">🛗 ELEVATORS</span>
-                </div>
-                <div className="font-mono text-[9px] text-zinc-400">
-                  LEVEL 1 ➔ GROUND & MEZZANINE
-                </div>
-                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono text-[8px] font-semibold border border-blue-500/30">
-                  💳 AUTO-PAY KIOSK 01
-                </div>
-              </div>
-              <div className="w-full pt-1 border-t border-white/10 text-[8px] font-mono text-zinc-500">
-                ▲ WALKWAY TO CROSSWALK
-              </div>
-            </div>
-
-            {/* Zone E: Heavy Trucks */}
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-[11px] font-semibold text-amber-400 uppercase tracking-wider">
-                  Zone E — Heavy Trucks (E1–E4)
+                <span className="text-[10px] text-zinc-400 font-mono bg-white/5 px-2 py-0.5 rounded">
+                  4 Bays • ₹150/hr
                 </span>
-                <span className="text-[10px] text-zinc-500 font-mono">Truck • 4.8m Heavy Dock</span>
               </div>
-              <div className="grid grid-cols-4 gap-3">
-                {rowE.map((slot) => (
-                  <ParkingBay2D
-                    key={slot.slotId}
-                    slot={slot}
-                    facing="north"
-                    isSelected={selectedSlotId === slot.slotId}
-                    isInspected={inspectedSlotId === slot.slotId}
-                    isDimmed={isSlotDimmed(slot)}
-                    onClick={handleBayClick}
-                    nowMs={nowMs}
-                    syncedAtMs={syncedAtMs}
-                  />
-                ))}
+              <div className="text-[10px] font-mono text-amber-400/80">
+                High-Clearance Freight Dock & Apron
               </div>
             </div>
-          </div>
 
-          {/* South Perimeter Wall Footer */}
-          <div className="flex items-center justify-between pt-4 mt-4 border-t border-white/10 text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
-            <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />
-              <span>South Perimeter Wall • Heavy Logistics & Core Elevator Zone</span>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] font-mono text-amber-400 uppercase tracking-wider font-semibold">
+                Row E — Heavy Freight Bays (E1–E4)
+              </span>
+              <span className="text-[9px] font-mono text-zinc-500">Wide Turning Radius Clearance</span>
             </div>
-            <div className="flex items-center gap-4">
-              <span>Fire Hose Station 02</span>
-              <span>Authorized Personnel Only</span>
+            <div className="grid grid-cols-4 gap-4">
+              {rowE.map((slot) => (
+                <ParkingBay2D
+                  key={slot.slotId}
+                  slot={slot}
+                  facing="north"
+                  isSelected={selectedSlotId === slot.slotId}
+                  isInspected={inspectedSlotId === slot.slotId}
+                  isDimmed={isSlotDimmed(slot)}
+                  onClick={handleBayClick}
+                  nowMs={nowMs}
+                  syncedAtMs={syncedAtMs}
+                />
+              ))}
             </div>
           </div>
 
         </div>
       </div>
 
-      {/* Facility Legend & Hint Footer */}
+      {/* Clean Legend & Action Hint Footer */}
       <div className="relative z-10 mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-zinc-400 pt-3 border-t border-white/10">
         <div className="flex items-center gap-4">
-          <span className="inline-flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_#22c55e]" />
-            <span>Green = Available Bay (Click to Park)</span>
+          <span className="inline-flex items-center gap-1.5 text-zinc-300">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_#10b981]" />
+            <span>Available (Click bay to park)</span>
           </span>
-          <span className="inline-flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_6px_#ef4444]" />
-            <span>Red = Occupied (Click to Inspect / Settle)</span>
+          <span className="inline-flex items-center gap-1.5 text-zinc-300">
+            <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_6px_#f43f5e]" />
+            <span>Occupied (Click bay to inspect / exit)</span>
           </span>
         </div>
         <div className="font-mono text-[11px] text-zinc-500">
@@ -1857,26 +1804,19 @@ function HomePage({
             </TiltCard3D>
           </div>
 
-          {/* Interactive 2D Top-Down Aerial Floor Map */}
-          <div className="pt-6">
-            <ParkingLot2DMap
-              slots={slots}
-              selectedSlotId={selectedSlot?.slotId}
-              onSelectSlot={(slot) => {
-                setSelectedSlot(slot);
-                setVehicleType(slot.type);
-                const el = document.getElementById('park-vehicle-card');
-                if (el) {
-                  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-              }}
-              onExitVehicle={onExitVehicle}
-              nowMs={nowMs}
-              syncedAtMs={syncedAtMs}
-              exitingVehicle={exitingVehicle}
-              title="Facility Deck 2D Sensor Map"
-              subtitle="Live aerial top-down radar view of all 20 bays with ultrasonic occupancy beacons"
-            />
+          {/* Quick Nav Pill to 2D Floor Map in Parking Slots */}
+          <div className="pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-black/8 mt-4">
+            <span className="text-xs text-zinc-500">
+              Live automated bay sensor telemetry • 20 active bays
+            </span>
+            <button
+              type="button"
+              onClick={() => onNavigate('slots')}
+              className="inline-flex items-center gap-2 rounded-full border border-black/15 bg-white px-4 py-2 text-xs font-semibold text-black hover:bg-black hover:text-white transition shadow-sm w-fit"
+            >
+              <Icon name="Map" className="w-3.5 h-3.5" />
+              <span>Explore 2D Aerial Floor Map ➔</span>
+            </button>
           </div>
         </section>
 
